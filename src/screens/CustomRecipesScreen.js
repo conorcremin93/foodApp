@@ -20,15 +20,12 @@ import {
     const dispatch = useDispatch();
   
     const route = useRoute();
-    const { recipe } = route.params || {}; // Pass the  object as a parameter
-    console.log('recipe',recipe);
-    
-    const favoriteRecipe = useSelector(
-      (state) => state.favorites.favoriterecipes
-    );
-    console.log('favoriteRecipe from custom',favoriteRecipe);
-    
-    const isFavourite = favoriteRecipe.includes(recipe.idCategory); // Adjust this according to your recipe structure
+    const { recipe } = route.params || {}; // Pass the object as a parameter
+  
+    const favoriteRecipes = useSelector((state) => state.favorites.favoriterecipes);
+    const isFavourite = favoriteRecipes.some(
+      (favRecipe) => favRecipe.idCategory === recipe?.idCategory
+    ); // Adjusted to match recipe structure
   
     if (!recipe) {
       return (
@@ -39,29 +36,36 @@ import {
     }
   
     const handleToggleFavorite = () => {
-      dispatch(toggleFavorite(recipe)); // Adjust the action to handle recipe
+      dispatch(toggleFavorite(recipe)); // Toggle favorite status
     };
   
     return (
       <ScrollView
         style={styles.container}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent} testID="scrollContent"
+        contentContainerStyle={styles.scrollContent}
+        testID="scrollContent"
       >
         {/* Recipe Image */}
         <View style={styles.imageContainer} testID="imageContainer">
-        {recipe.image && (
-            <Image source={{ uri: recipe.image }} style={styles.recipeImage} />
+          {recipe.image && (
+            <Image
+              source={{ uri: recipe.image }}
+              style={[
+                styles.recipeImage,
+                { height: recipe.index % 3 === 0 ? hp(25) : hp(35) },
+              ]}
+            />
           )}
         </View>
-        <View
-          style={styles.topButtonsContainer} testID="topButtonsContainer"
-        >
+  
+        {/* Buttons */}
+        <View style={styles.topButtonsContainer} testID="topButtonsContainer">
           <TouchableOpacity
             onPress={() => navigation.goBack()}
             style={styles.backButton}
           >
-            <Text>Back</Text>
+            <Text>Go Back</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handleToggleFavorite}
@@ -73,11 +77,11 @@ import {
   
         {/* Recipe Details */}
         <View style={styles.contentContainer} testID="contentContainer">
-        <Text style={styles.recipeTitle}>{recipe.title}</Text>
-  <View style={styles.sectionContainer}>
-    <Text style={styles.sectionTitle}>Content</Text>
-    <Text style={styles.contentText}>{recipe.description}</Text>
-  </View>
+          <Text style={styles.recipeTitle}>{recipe.title}</Text>
+          <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>Content</Text>
+            <Text style={styles.contentText}>{recipe.description}</Text>
+          </View>
         </View>
       </ScrollView>
     );
@@ -97,30 +101,8 @@ import {
     },
     recipeImage: {
       width: wp(98),
-      height: hp(50),
       borderRadius: 35,
-      borderBottomLeftRadius: 40,
-      borderBottomRightRadius: 40,
       marginTop: 4,
-    },
-    contentContainer: {
-      paddingHorizontal: wp(4),
-      paddingTop: hp(4),
-    },
-    recipeTitle: {
-      fontSize: hp(3),
-      fontWeight: "bold",
-      color: "#4B5563",
-      marginBottom: hp(2),
-    },
-    sectionContainer: {
-      marginBottom: hp(2),
-    },
-    sectionTitle: {
-      fontSize: hp(2.5),
-      fontWeight: "bold",
-      color: "#4B5563",
-      marginBottom: hp(1),
     },
     topButtonsContainer: {
       width: "100%",
@@ -141,6 +123,25 @@ import {
       borderRadius: 50,
       marginRight: wp(5),
       backgroundColor: "white",
+    },
+    contentContainer: {
+      paddingHorizontal: wp(4),
+      paddingTop: hp(4),
+    },
+    recipeTitle: {
+      fontSize: hp(3),
+      fontWeight: "bold",
+      color: "#4B5563",
+      marginBottom: hp(2),
+    },
+    sectionContainer: {
+      marginBottom: hp(2),
+    },
+    sectionTitle: {
+      fontSize: hp(2.5),
+      fontWeight: "bold",
+      color: "#4B5563",
+      marginBottom: hp(1),
     },
     contentText: {
       fontSize: hp(1.6),

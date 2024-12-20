@@ -12,9 +12,41 @@ export default function RecipesFormScreen({ route, navigation }) {
   );
 
   const saverecipe = async () => {
- 
+    try {
+      // Initialize a new recipe object
+      const newRecipe = {
+        title,
+        image,
+        description,
+      };
+  
+      // Retrieve existing recipes from AsyncStorage
+      const storedRecipes = await AsyncStorage.getItem("customrecipes");
+      const recipes = storedRecipes ? JSON.parse(storedRecipes) : [];
+  
+      if (recipeToEdit) {
+        // If editing, update the specific recipe
+        recipes[recipeIndex] = newRecipe;
+  
+        // Notify parent component about the edit
+        if (onrecipeEdited) {
+          onrecipeEdited(newRecipe);
+        }
+      } else {
+        // If adding a new recipe, push it to the array
+        recipes.push(newRecipe);
+      }
+  
+      // Save updated recipes back to AsyncStorage
+      await AsyncStorage.setItem("customrecipes", JSON.stringify(recipes));
+  
+      // Navigate back to the previous screen
+      navigation.goBack();
+    } catch (error) {
+      console.error("Error saving recipe:", error);
+    }
   };
-
+  
   return (
     <View style={styles.container}>
       <TextInput

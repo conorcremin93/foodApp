@@ -54,14 +54,14 @@ import {
             <Text style={styles.categoryText}>My Favorites</Text>
           </TouchableOpacity>
   
-          {categories.map((cat, index) => {
+          {categories.map((cat) => {
             let isActive = cat.strCategory == activeCategory;
             let activeButtonStyle = isActive
               ? styles.activeButton
               : styles.inactiveButton;
             return (
               <TouchableOpacity
-                key={index}
+                key={cat.idCategory}
                 onPress={() => handleChangeCategory(cat.strCategory)}
                 style={styles.categoryContainer}
               >
